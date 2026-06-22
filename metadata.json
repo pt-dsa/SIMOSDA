@@ -1,0 +1,6 @@
+{
+  "name": "SIMOSDA",
+  "description": "Sistem Informasi Monitoring Aset Daerah",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
