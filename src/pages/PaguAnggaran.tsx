@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { DetailModal } from '@/components/ui/DetailModal';
 import { DataTable, ColumnDef } from "@/components/ui/DataTable";
 import { formatCurrency } from "@/lib/utils";
-import { TableSkeleton } from "@/components/ui/TableSkeleton";
+import { LoadingState } from "@/components/ui/LoadingState";
 
 export default function PaguAnggaran() {
   const [data, setData] = useState<Budget[]>([]);
@@ -134,7 +134,7 @@ export default function PaguAnggaran() {
     );
   };
 
-  if (loading) return <TableSkeleton />;
+  if (loading) return <LoadingState />;
 
   return (
     <div className="space-y-6">

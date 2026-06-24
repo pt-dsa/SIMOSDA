@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { Card, CardContent } from "@/components/ui/Card";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { LoadingState } from "@/components/ui/LoadingState";
 import { Car, Bike, Wrench, Package, MapPin, Eye, Map as MapIcon, Layers, Radio, ZoomIn, X, Search, ChevronDown, ChevronUp } from "lucide-react";
 import { renderToString } from "react-dom/server";
 import { StatusBadge } from "@/components/ui/Badge";
@@ -199,15 +199,7 @@ export default function PetaSebaran() {
   }, [locations, filterType, filterCondition, searchQuery]);
 
   if (loading) {
-    return (
-      <div className="space-y-4">
-        <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-4 w-96 mb-4" />
-        <Card className="h-[600px] w-full rounded-2xl border-0 shadow-lg overflow-hidden flex items-center justify-center p-0">
-          <Skeleton className="h-full w-full" />
-        </Card>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   const center: [number, number] = filteredLocations.length > 0

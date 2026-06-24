@@ -8,7 +8,7 @@ import { QrCode, MapPin, Plus, Edit2, Trash2, X, ImageOff, AlertCircle, ZoomIn, 
 import { QRCodeSVG } from "qrcode.react";
 import { DataTable, ColumnDef } from "@/components/ui/DataTable";
 import { DetailModal } from "@/components/ui/DetailModal";
-import { TableSkeleton } from "@/components/ui/TableSkeleton";
+import { LoadingState } from "@/components/ui/LoadingState";
 import { useToast } from "@/components/ui/Toast";
 import { useLocation } from "react-router-dom";
 
@@ -268,7 +268,7 @@ export default function Kendaraan() {
     </div>
   );
 
-  if (loading) return <TableSkeleton />;
+  if (loading) return <LoadingState />;
 
   return (
     <div className="space-y-6">

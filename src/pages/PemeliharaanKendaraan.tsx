@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/Card";
 import { DetailModal } from '@/components/ui/DetailModal';
 import { DataTable, ColumnDef } from "@/components/ui/DataTable";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { TableSkeleton } from "@/components/ui/TableSkeleton";
+import { LoadingState } from "@/components/ui/LoadingState";
 
 export default function PemeliharaanKendaraan() {
   const [data, setData] = useState<Maintenance[]>([]);
@@ -113,7 +113,7 @@ export default function PemeliharaanKendaraan() {
     </div>
   );
 
-  if (loading) return <TableSkeleton />;
+  if (loading) return <LoadingState />;
 
   return (
     <div className="space-y-6">

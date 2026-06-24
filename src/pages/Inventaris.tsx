@@ -8,7 +8,7 @@ import { QrCode, MapPin, ImageOff, ZoomIn, X, CheckSquare, Trash2 } from "lucide
 import { QRCodeSVG } from "qrcode.react";
 import { DetailModal } from '@/components/ui/DetailModal';
 import { DataTable, ColumnDef } from "@/components/ui/DataTable";
-import { TableSkeleton } from "@/components/ui/TableSkeleton";
+import { LoadingState } from "@/components/ui/LoadingState";
 import { useLocation } from "react-router-dom";
 import { useToast } from "@/components/ui/Toast";
 
@@ -186,7 +186,7 @@ export default function Inventaris() {
     </div>
   );
 
-  if (loading) return <TableSkeleton />;
+  if (loading) return <LoadingState />;
 
   return (
     <div className="space-y-6">

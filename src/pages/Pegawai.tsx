@@ -4,7 +4,7 @@ import { Pegawai } from "@/types";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Search, Info, Briefcase, UserCircle, Calendar, AlertTriangle, Package, ZoomIn, ImageOff } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { LoadingState } from "@/components/ui/LoadingState";
 import { DetailModal } from "@/components/ui/DetailModal";
 
 export default function PegawaiPage() {
@@ -55,21 +55,7 @@ export default function PegawaiPage() {
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1,2,3,4,5,6].map(i => (
-            <Card key={i}>
-              <CardContent className="p-6">
-                <div className="flex gap-4">
-                  <Skeleton className="w-16 h-16 rounded-full" />
-                  <div className="space-y-2 flex-1">
-                    <Skeleton className="h-5 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <LoadingState />
       ) : (
         <div className="w-full">
           {/* Desktop Table View */}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { LoadingState } from "@/components/ui/LoadingState";
 import { spreadsheetService } from "@/services/spreadsheetService";
 import { DashboardMetrics } from "@/types";
 import { formatNumber, formatCurrency } from "@/lib/utils";
@@ -30,30 +30,7 @@ export default function Dashboard() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-end">
-          <div>
-            <Skeleton className="h-8 w-64 mb-2" />
-            <Skeleton className="h-4 w-48" />
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[...Array(8)].map((_, i) => (
-            <Card key={i} className="border-0 shadow-sm">
-              <CardContent className="p-6 flex items-center space-x-4">
-                <Skeleton className="w-12 h-12 rounded-xl" />
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-6 w-16" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (errorMsg) {
