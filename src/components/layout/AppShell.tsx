@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { BrowserRouter, Route, Routes, Navigate, NavLink, useLocation } from "react-router-dom";
+import { Navigate, NavLink, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, CarFront, Wrench, Package, WalletCards, 
   Settings, LogOut, Menu, Map, FileText, CalendarClock, Users, Bell
@@ -15,7 +15,11 @@ export const AuthContext = createContext({ user: null as any, login: () => {}, l
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("sikanda_user");
-    return saved ? JSON.parse(saved) : null;
+    try {
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
   });
 
   const login = () => {
@@ -53,38 +57,21 @@ function Sidebar({ mobileOpen, desktopOpen, setMobileOpen }: { mobileOpen: boole
   useEffect(() => {
     async function checkMaintenance() {
       try {
-        // Dynamic check for spreadsheetService or a mock implementation
-        const mod = await import('@/services/spreadsheetService');
-        if (mod && mod.spreadsheetService) {
-          const vehicles = await mod.spreadsheetService.getVehicles();
-          let count = 0;
-          const now = new Date();
-          const next7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-          
-          vehicles.forEach((v: any) => {
-            if (v.next_service_date || v.jadwal_service) {
-               const dateStr = v.next_service_date || v.jadwal_service;
-               const dt = new Date(dateStr);
-               if (!isNaN(dt.getTime()) && dt >= now && dt <= next7Days) count++;
-            } else if (v.km_kendaraan) {
-               // Simulate condition based on KM if real dates aren't configured yet
-               const kmText = String(v.km_kendaraan);
-               const km = parseInt(kmText.replace(/[^0-9]/g, ''), 10);
-               if (km && !isNaN(km)) {
-                 if (km % 5000 >= 4800 || km % 5000 === 0) {
-                    count++;
-                 }
-               }
-            }
-          });
-          
-          // Provide at least 1 mock notification to demonstrate the feature's UI if none naturally occur
-          if (count === 0) {
-            count = 2; // Simulated due items to satisfy visual prototype requirement
+        const vehicles = await spreadsheetService.getVehicles();
+        let count = 0;
+        const now = new Date();
+        const next7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+        vehicles.forEach((v: any) => {
+          // Hanya berbasis tanggal servis NYATA bila tersedia di data. Tidak ada simulasi.
+          const dateStr = v.next_service_date || v.jadwal_service;
+          if (dateStr) {
+            const dt = new Date(dateStr);
+            if (!isNaN(dt.getTime()) && dt >= now && dt <= next7Days) count++;
           }
-          
-          setUpcomingMaintenanceCount(count);
-        }
+        });
+
+        setUpcomingMaintenanceCount(count);
       } catch (e) {
         console.error(e);
       }
@@ -192,23 +179,18 @@ function Topbar({ setMobileSidebarOpen, desktopSidebarOpen, setDesktopSidebarOpe
         const sixMonthsFromNow = new Date();
         sixMonthsFromNow.setMonth(today.getMonth() + 6);
 
-        pegawai.forEach(p => {
-          if (p.status.toLowerCase() !== 'aktif') return;
-          const checkDate = (dateStr: string) => {
-            if (!dateStr) return false;
-            const d = new Date(dateStr);
-            return d >= today && d <= sixMonthsFromNow;
-          };
-          if (checkDate(p.tgl_kgb)) alerts++;
-          if (checkDate(p.tgl_pangkat)) alerts++;
-          
-          if (p.tgl_lahir) {
-            const birth = new Date(p.tgl_lahir);
-            const pensionDate = new Date(birth.getFullYear() + 58, birth.getMonth(), birth.getDate());
-            if (pensionDate >= today && pensionDate <= sixMonthsFromNow) {
-              alerts++;
-            }
-          }
+        const within = (dateStr: string) => {
+          const d = new Date(dateStr);
+          return !isNaN(d.getTime()) && d >= today && d <= sixMonthsFromNow;
+        };
+
+        pegawai.forEach((p) => {
+          // status berisi "ASN"/"PPPK"/"PENSIUN" — lewati yang sudah pensiun.
+          if (String(p.status || "").toUpperCase() === "PENSIUN") return;
+          // tgl_kgb / tgl_pangkat / tgl_pensiun sudah dihitung service memakai BUP dari system_config.
+          if (within(p.tgl_kgb)) alerts++;
+          if (within(p.tgl_pangkat)) alerts++;
+          if (within(p.tgl_pensiun)) alerts++;
         });
         setAlertCount(alerts);
       } catch (err) {

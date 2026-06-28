@@ -2,7 +2,7 @@ export interface Asset {
   id?: string | number;
   asset_id?: string;
   kode_barang?: string;
-  nama_aset?: string; // normalized from nama_barang
+  nama_aset?: string;
   merk?: string;
   tahun?: string | number;
   pengguna?: string;
@@ -86,36 +86,102 @@ export interface Loan {
 }
 
 export interface Pegawai {
+  // Core identity (from sheet)
   nip: string;
   nama: string;
   jabatan: string;
   unit_kerja: string;
   golongan: string;
-  status: string;
+  status: string; // "ASN" | "PPPK"
+
+  // Dates (from sheet, raw string)
   tgl_lahir: string;
+  tgl_mulai_golongan: string; // TERHITUNG MULAI TANGGAL (GOLONGAN)
+  tgl_mulai_jabatan: string;  // TERHITUNG MULAI TANGGAL (JABATAN)
+
+  // Computed alert dates (YYYY-MM-DD)
   tgl_kgb: string;
   tgl_pangkat: string;
-  foto?: string;
-  assets?: any[];
+  tgl_pensiun: string;
+
+  // Work metrics (from sheet)
+  masa_kerja_tahun: number;
+  masa_kerja_bulan: number;
+
+  // Education (from sheet)
+  tingkat: string;            // STRATA I, STRATA II, DIPLOMA III, etc.
+  pendidikan_jurusan: string;
+  universitas: string;
+  tahun_lulus: string;
+
+  // Training (from sheet)
+  riwayat_diklat: string;
+  tahun_diklat: string;
+
+  // Personal / contact
+  usia: string;
+  kontak: string;
+  email: string;
+  keterangan: string;
+  catatan_mutasi_masuk: string;
+  catatan_mutasi_keluar: string;
+
+  // Photo (Google Drive direct URL)
+  foto: string;
+
+  // Linked assets (populated after matching)
+  assets: any[];
+  assets_kendaraan: any[];
+  assets_alat_mesin: any[];
+  assets_inventaris: any[];
+  match_quality: "exact" | "fuzzy" | "none";
+  is_incomplete?: boolean;
+  is_active?: boolean;
+}
+
+// Distribution data point (for charts)
+export interface DistribusiItem {
+  name: string;
+  value: number;
 }
 
 export interface DashboardMetrics {
+  // HR — Core counts
   totalPegawai: number;
   pegawaiAktif: number;
   pegawaiPensiun: number;
+  pegawaiASN: number;
+  pegawaiPPPK: number;
+
+  // HR — Buku Penjagaan alerts (6-month window)
   peringatanKGB: number;
   peringatanPangkat: number;
   peringatanPensiun: number;
+
+  // HR — Composition charts
+  distribusiGolongan: DistribusiItem[];
+  distribusiPendidikan: DistribusiItem[];
+  distribusiMasaKerja: DistribusiItem[];
+
+  // Assets
   totalAset: number;
   totalKendaraan: number;
   totalAlatMesin: number;
   totalInventaris: number;
+
+  // Transactions
   totalPeminjaman: number;
   totalPemeliharaan: number;
+
+  // Budget
   totalPagu: number;
   totalRealisasi: number;
   persenRealisasi: number;
+
+  // Meta
   lastUpdated?: string | null;
+
+  // Analytics
   assetTrends?: { name: string; Vehicles: number; Equipment: number; Inventory: number }[];
   maintenanceForecast?: {
     avgMonthlyCost: number;
